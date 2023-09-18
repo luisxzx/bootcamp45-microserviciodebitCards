@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class debitcardservice implements DebitCardOperations {
+
     @Autowired
     private CuentasRestClient cuentasRestClient;
     @Autowired
@@ -129,6 +130,8 @@ public class debitcardservice implements DebitCardOperations {
                 .map(accountDetails -> new MainAccountBalance().balance(accountDetails.getBalance()))
                 .switchIfEmpty(Mono.error(new RuntimeException("No se encontró el cardId o el mainAccountId asociado")));
     }
+
+
 }
 
 

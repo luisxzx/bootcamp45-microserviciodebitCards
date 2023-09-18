@@ -27,7 +27,7 @@ public class Debitcardsdelegateimp implements DebitCardsApiDelegate {
     }
 
     @Override
-    public Mono<ResponseEntity<Void>> debitCardsCardIdDepositPost(String cardId, Mono<TransactionRequest> transactionRequest, ServerWebExchange exchange) {
+    public Mono<ResponseEntity<Void>> debitCardsCardIdTransactionPost(String cardId, Mono<TransactionRequest> transactionRequest, ServerWebExchange exchange) {
         return transactionRequest.flatMap(request -> {
             BigDecimal amountToDebit = BigDecimal.valueOf(request.getAmount());
             return debitCardOperations.processDebit(cardId, amountToDebit)
@@ -59,4 +59,6 @@ public class Debitcardsdelegateimp implements DebitCardsApiDelegate {
                 .map(ResponseEntity::ok)
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()));
     }
+
+
 }

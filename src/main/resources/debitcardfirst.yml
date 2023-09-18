@@ -47,9 +47,9 @@ paths:
         '500':
           description: Internal server error
 
-  /debit-cards/{cardId}/deposit:
+  /debit-cards/{cardId}/transaction:
     post:
-      summary: Deposit money to the debit card
+      summary: purchase or substract products o money
       parameters:
         - name: cardId
           in: path
