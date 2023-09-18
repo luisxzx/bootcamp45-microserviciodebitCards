@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  title: Debit Cards API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8088
+paths:
+  /debit-cards:
+    post:
+      summary: Register a new debit card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebitCardCreationRequest'
+      responses:
+        '201':
+          description: Debit card created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitCard'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+  /debit-cards/{cardId}:
+    get:
+      summary: Get a debit card by ID
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebitCard'
+        '404':
+          description: Debit card not found
+        '500':
+          description: Internal server error
+
+  /debit-cards/{cardId}/deposit:
+    post:
+      summary: Deposit money to the debit card
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Deposit successful
+        '400':
+          description: Bad request
+        '404':
+          description: Debit card not found
+        '500':
+          description: Internal server error
+
+  /debit-cards/{cardId}/withdraw:
+    post:
+      summary: Withdraw money from the debit card
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Withdrawal successful
+        '400':
+          description: Bad request or insufficient funds
+        '404':
+          description: Debit card not found
+        '500':
+          description: Internal server error
+
+  /debit-cards/getmainaccount:
+    post:
+      summary: Get main account details by debit card ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: string
+              required:
+              - cardId
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MainAccountBalance'
+        '400':
+          description: Bad request
+        '404':
+          description: Debit card not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    DebitCardCreationRequest:
+      type: object
+      properties:
+        clientId:
+          type: string
+    DebitCard:
+      type: object
+      properties:
+        id:
+          type: string
+        clientId:
+          type: string
+        issueDate:
+          type: string
+          format: date-time
+        mainAccountId:
+          type: string
+        secondaryAccountIds:
+          type: array
+          items:
+            type: string
+    TransactionRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+
+    AccountDetails:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - ahorro
+            - corriente
+            - plazoFijo
+        owner_clients:
+          type: array
+          items:
+            type: string
+        sign_clients:
+          type: array
+          items:
+            type: string
+        balance:
+          type: number
+        transactionCount:
+          type: integer
+        lastTransactionDate:
+          type: string
+          format: date-time
+      required:
+        - type
+        - balance
+        - owner_clients
+
+    MainAccountBalance:
+      type: object
+      properties:
+        balance:
+          type: number
